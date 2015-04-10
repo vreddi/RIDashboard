@@ -8,7 +8,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+    <link rel="icon" href="http://perception.csl.illinois.edu/logos/UIUC_logo.gif">
 
     <title>RIDashboard</title>
 
@@ -50,9 +50,13 @@
 
     <div class="container" style="width: 500px; margin-top: 100px;">
       <h3>Enter Details: </h3>
-      <input type="text" class="form-control" placeholder="Paper Name">
-      <input type="text" class="form-control" placeholder="Author">
-      <input type="text" class="form-control" placeholder="University Affiliation">
+      <form method="POST" action=""> {% csrf_token %}
+        <input type="text" class="form-control" placeholder="Paper Name" name="paper_name" />
+        <input type="text" class="form-control" placeholder="Author" name="authors" />
+        <input type="text" class="form-control" placeholder="University Affiliation" name="affiliation" /> 
+        <button type="submit" class="btn" style="background-color: #222; color: white; margin-left: 40%; margin-top: 10px">Submit</button>
+      </form>
+
     </div>
 
 
