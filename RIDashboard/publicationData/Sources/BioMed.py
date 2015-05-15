@@ -4,29 +4,29 @@ from nltk.corpus import stopwords
 from nltk.tokenize import RegexpTokenizer
 import json
 import urllib.request
+import requests
 
 
-def searchBioMed():
-
-    paperName = input('Enter Research Paper Name: ')
-    authorName = input('Enter Author(s) Name: ')
-    institutionName = input('Enter Affiliated Institution: ')
+def getBioMedData(authorName, institutionName):
 
     # Partition into words and remove punctuation marks
-    tokenizer = RegexpTokenizer(r'\w+')
-    words = tokenizer.tokenize(paperName)
+    # tokenizer = RegexpTokenizer(r'\w+')
+    # words = tokenizer.tokenize(paperName)
 
     # Removing Stop Words
-    words_without_stopwords = []
+    # words_without_stopwords = []
 
-    stop = stopwords.words('english')
+    # stop = stopwords.words('english')
 
-    # Add in non stop-words
-    for word in words:
-        if(word not in stop):
-            words_without_stopwords.append(word)
+    # # Add in non stop-words
+    # for word in words:
+    #     if(word not in stop):
+    #         words_without_stopwords.append(word)
 
-    query = " ".join(words)
+    if(len(authorName) == 0 and len(institutionName) == 0):
+        return 'No Result Possible. Invalid Inputs or no results produced from BioMed.';
+
+    query = authorName + " " + institutionName;
 
     baseURL = 'http://www.biomedcentral.com/search/results?terms='
 
@@ -40,29 +40,44 @@ def searchBioMed():
 
     print(finalURL)
 
-    with urllib.request.urlopen(finalURL) as jsonData:
-        raw = jsonData.read()
-        jsonURLData = json.loads(raw.decode())
+    r = requests.get(finalURL)
+
+    jsonURLData = r.json()
 
     print(str(jsonURLData))
     print(finalURL)
     resultCounter = 1
 
-    for dataUnit in jsonURLData['entries']:
 
-        print('RESULT ' + str(resultCounter) + ': ')
-        print('--------------------------------------------------------------------------------------')
-        print('Published Date: ' + dataUnit['published Date'])
-        print('Title: ' + dataUnit['bibliograhyTitle'])
-        print('Data-Type: ' + dataUnit['type'])
-        print('Citation Data: ' + dataUnit['longCitation'])
-        print('Abstract URL Path: ' + dataUnit['abstractPath'])
-        resultCounter += 1
+    title = []
+    authors = []
+    py = []
+    citation = []
+    abstractPath = []
+    articleType = []
 
+    if(len(jsonURLData['entries']) > 1):
+        for dataUnit in jsonURLData['entries']:
 
-        print('\n')
+            py.append(dataUnit['published Date']);
 
+            title.append(dataUnit['bibliograhyTitle']);
 
-#Call the main Function
-#For Testing
-searchBioMed()
+            abstractPath.append(dataUnit['abstractPath']);
+
+            articleType.append(dataUnit['type']);
+
+            authors.append(dataUnit['authorNames']);
+
+            
+        BioMedData = {
+
+            'title' : title,
+            'authors' : authors,
+            'py' : py,
+            'citation' : citation,
+            'abstractPath' : abstractPath,
+            'articleType' : articleType
+        }
+
+    return BioMedData
